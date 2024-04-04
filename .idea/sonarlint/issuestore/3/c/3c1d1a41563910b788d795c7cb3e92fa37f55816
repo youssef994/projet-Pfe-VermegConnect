@@ -1,0 +1,11 @@
+
+g	java:S112-"FDefine and throw a dedicated exception instead of using a generic one.(ÿŠÔ±ùÿÿÿÿ8ëĞèñé1
+b	java:S1121"FDefine and throw a dedicated exception instead of using a generic one.(ş¥Áá8ìĞèñé1
+b	java:S112D"FDefine and throw a dedicated exception instead of using a generic one.(ë‚¤8ìĞèñé1
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(å…“ûÿÿÿÿ8‘Ìê¤è1
+z
+java:S2139B"XEither log this exception and handle it, or rethrow it with some contextual information.(±Ÿ—±ÿÿÿÿÿ8¥µêñé1
+E
+java:S2140g")Use "java.util.Random.nextInt()" instead.(Ü¡“J8Ô«²é1
+^
+java:S3457h"AFormat specifiers should be used instead of string concatenation.(‚Èàª8Ô«²é1
