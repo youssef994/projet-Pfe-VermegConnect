@@ -17,7 +17,6 @@ public class Vote {
     private Long voteId;
 
 
-
     private String voteType;
 
     @ManyToOne
@@ -25,6 +24,6 @@ public class Vote {
     private Post post;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "userId", insertable = false, updatable = false)
+    @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
     private User user;
 }

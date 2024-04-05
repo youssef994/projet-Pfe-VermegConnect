@@ -1,10 +1,8 @@
 package com.example.authentication.Model;
 
 
-
 import jakarta.persistence.*;
 import lombok.*;
-
 
 
 @Entity
@@ -26,6 +24,7 @@ public class UserCredentials {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.User;
+
     public void setIsVerified(Boolean isVerified) {
         this.isVerified = isVerified;
     }

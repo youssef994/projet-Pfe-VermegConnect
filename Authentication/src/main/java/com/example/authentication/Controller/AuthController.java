@@ -38,6 +38,7 @@ public class AuthController {
             return new ResponseEntity<>(null, HttpStatus.CONFLICT);
         }
     }
+
     @GetMapping("/verify-email")
     public ResponseEntity<String> verifyEmail(@RequestParam String code) {
         boolean isVerified = authService.verifyEmail(code);
@@ -72,6 +73,7 @@ public class AuthController {
             throw new RuntimeException("invalid access");
         }
     }
+
     @GetMapping("/byRole")
     public List<UserCredentials> getAllUsersByRole(@RequestParam Role role) {
         return authService.getAllUsersByRole(role);
@@ -96,6 +98,7 @@ public class AuthController {
             return new ResponseEntity<>("Failed to delete user!", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @GetMapping("/getById/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
         Optional<UserCredentials> userOptional = authService.getUserById(id);
@@ -112,8 +115,6 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-
 
 
 }

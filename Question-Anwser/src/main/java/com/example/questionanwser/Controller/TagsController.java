@@ -36,7 +36,6 @@ public class TagsController {
     }
 
 
-
     @PostMapping("create")
     public ResponseEntity<Tags> createTag(@RequestBody Tags tag) {
         Tags createdTag = tagsService.createTag(tag);
