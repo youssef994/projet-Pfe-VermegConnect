@@ -25,5 +25,5 @@ public class Vote {
 
     @ManyToOne
     @JoinColumn(name = "id", referencedColumnName = "id", insertable = false, updatable = false)
-    private User user;
+    private UserCredentials user;
 }

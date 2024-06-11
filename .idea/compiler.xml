@@ -10,7 +10,6 @@
         <module name="api-gateway" />
         <module name="Question-Anwser" />
         <module name="Eureka-server" />
-        <module name="Authentication" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>

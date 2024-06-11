@@ -1,8 +1,9 @@
 package com.example.questionanwser.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -13,6 +14,9 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Table(name = "posts")
 public class Post {
 
@@ -41,10 +45,12 @@ public class Post {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tags> tags = new HashSet<>();
 
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
-    private User user;
+    private UserCredentials user;
 
 
+
+ 
 }

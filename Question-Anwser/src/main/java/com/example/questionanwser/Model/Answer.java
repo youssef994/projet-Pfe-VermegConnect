@@ -39,5 +39,5 @@ public class Answer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
-    private User user;
+    private UserCredentials user;
 }
