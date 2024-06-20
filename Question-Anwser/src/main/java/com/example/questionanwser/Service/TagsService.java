@@ -5,6 +5,7 @@ import com.example.questionanwser.Model.Tags;
 import com.example.questionanwser.Repository.PostRepository;
 import com.example.questionanwser.Repository.TagsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,6 +32,23 @@ public class TagsService {
     public void deleteTag(Long id) {
         tagsRepository.deleteById(id);
     }
+    public List<Tags> getTagsByName(String name) {
+        return tagsRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public Tags getOrCreateTag(String name) {
+        Tags tag = tagsRepository.findByNameIgnoreCase(name);
+        if (tag == null) {
+            tag = new Tags();
+            tag.setName(name);
+            tag = tagsRepository.save(tag);
+        }
+        return tag;
+    }
+    public List<Tags> getPopularTags(int limit) {
+        return tagsRepository.findPopularTags(PageRequest.of(0, limit)).getContent();
+    }
+
 
 
 }

@@ -93,3 +93,7 @@ VQuestion-Anwser/src/main/java/com/example/questionanwser/config/WebSecurityConf
 NQuestion-Anwser/src/main/java/com/example/questionanwser/config/WebConfig.java,e\d\ed1722c72c5e3accb00c9cb05f2a1c0dcff7f3a3
 ^
 .Question-Anwser/src/main/java/dto/PostDTO.java,5\e\5e634ef7c7c3839fa074e72e3ee6294ec4f18163
+S
+#.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
+‘
+aQuestion-Anwser/src/main/java/com/example/questionanwser/Repository/UserCredentialRepository.java,0\a\0a30d635dc7618cf799e9cd1dd6eed2af71fb2b3

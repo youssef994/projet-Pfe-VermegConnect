@@ -1,9 +1,13 @@
 package com.example.questionanwser.Controller;
 
+import com.example.questionanwser.Model.Post;
 import com.example.questionanwser.Model.Tags;
 import com.example.questionanwser.Service.TagsService;
 import jakarta.ws.rs.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +40,29 @@ public class TagsController {
     }
 
 
-    @PostMapping("create")
-    public ResponseEntity<Tags> createTag(@RequestBody Tags tag) {
-        Tags createdTag = tagsService.createTag(tag);
-        return new ResponseEntity<>(createdTag, HttpStatus.CREATED);
-    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTag(@PathVariable("id") Long id) {
         tagsService.deleteTag(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/search")
+    public List<Tags> searchTags(@RequestParam String query) {
+        return tagsService.getTagsByName(query);
+    }
+
+    @PostMapping("/create")
+    public Tags createTag(@RequestParam String name) {
+        return tagsService.getOrCreateTag(name);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<List<Tags>> getPopularTags(@RequestParam(defaultValue = "4") int limit) {
+        List<Tags> popularTags = tagsService.getPopularTags(limit);
+        return ResponseEntity.ok(popularTags);
+    }
+
+
 }

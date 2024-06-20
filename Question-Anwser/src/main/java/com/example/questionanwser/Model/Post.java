@@ -1,7 +1,9 @@
 package com.example.questionanwser.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,7 +30,7 @@ public class Post {
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
-
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
 
@@ -36,9 +38,20 @@ public class Post {
 
     private int downvotes;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "upvoters", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "username")
+    private Set<String> upvoters = new HashSet<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "downvoters", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "username")
+    private Set<String> downvoters = new HashSet<>();
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Answer> answers;
 
+    @JsonManagedReference
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "post_tags",
             joinColumns = @JoinColumn(name = "post_id"),
@@ -51,6 +64,8 @@ public class Post {
     private UserCredentials user;
 
 
-
- 
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

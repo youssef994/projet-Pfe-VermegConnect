@@ -1,5 +1,6 @@
 package com.example.questionanwser.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,14 @@ public class Tags {
     private String name;
     private String description;
 
+    @JsonBackReference
     @ManyToMany(mappedBy = "tags")
     private Set<Post> posts = new HashSet<>();
+    public Tags() {
 
+    }
+
+    public Tags(String name) {
+        this.name = name;
+    }
 }
