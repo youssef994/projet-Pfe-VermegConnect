@@ -1,9 +1,6 @@
 package com.example.questionanwser.Model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,18 +46,21 @@ public class Post {
     private Set<String> downvoters = new HashSet<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "post-answers")
     private List<Answer> answers;
 
-    @JsonManagedReference
+
     @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinTable(name = "post_tags",
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tags> tags = new HashSet<>();
 
-    @JsonIgnore
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id")
+    @JsonBackReference(value = "user-posts")
     private UserCredentials user;
 
 

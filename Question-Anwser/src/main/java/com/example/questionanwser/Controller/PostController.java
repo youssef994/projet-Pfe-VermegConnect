@@ -50,7 +50,7 @@ public class PostController {
             postDTO.setUpvotes(post.getUpvotes());
             postDTO.setDownvotes(post.getDownvotes());
             postDTO.setTags(post.getTags());
-            postDTO.setUsername(post.getUser() != null ? post.getUser().getUsername() : null); // Get the username
+            postDTO.setUsername(post.getUser() != null ? post.getUser().getUsername() : null);
             return postDTO;
         }).collect(Collectors.toList());
 
@@ -122,10 +122,12 @@ public class PostController {
 
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable(value = "id") Long postId, @RequestBody Post postDetails) {
-        Post updatedPost = postService.updatePost(postId, postDetails);
-        return ResponseEntity.ok().body(updatedPost);
+    public ResponseEntity<PostDTO> updatePost(@PathVariable(value = "id") Long postId, @RequestBody PostRequest postRequest) {
+        Post updatedPost = postService.updatePost(postId, postRequest);
+        PostDTO postDTO = convertToDTO(updatedPost);
+        return ResponseEntity.ok().body(postDTO);
     }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deletePost(@PathVariable(value = "id") Long postId) {

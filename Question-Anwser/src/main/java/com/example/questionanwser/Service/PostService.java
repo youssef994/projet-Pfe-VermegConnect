@@ -4,6 +4,7 @@ import com.example.questionanwser.Model.Post;
 import com.example.questionanwser.Model.Tags;
 import com.example.questionanwser.Repository.PostRepository;
 import com.example.questionanwser.Repository.TagsRepository;
+import dto.PostRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,14 +52,25 @@ public class PostService {
         return savedPost;
     }
 
-    public Post updatePost(Long postId, Post postDetails) {
-        return postRepository.findById(postId)
-                .map(post -> {
-                    post.setTitle(postDetails.getTitle());
-                    post.setContent(postDetails.getContent());
-                    return postRepository.save(post);
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+    public Post updatePost(Long postId, PostRequest postRequest) {
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            post.setTitle(postRequest.getTitle());
+            post.setContent(postRequest.getContent());
+
+            // Update tags
+            Set<Tags> tags = postRequest.getTags().stream()
+                    .map(name -> tagsRepository.findByName(name)
+                            .orElseGet(() -> tagsRepository.save(new Tags(name))))
+                    .collect(Collectors.toSet());
+            post.setTags(tags);
+
+            // Update other fields as necessary
+            return postRepository.save(post);
+        } else {
+            throw new ResourceNotFoundException("Post not found with id " + postId);
+        }
     }
 
     public void deletePost(Long postId) {
