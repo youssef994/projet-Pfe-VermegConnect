@@ -1,0 +1,5 @@
+
+g	java:S112B"FDefine and throw a dedicated exception instead of using a generic one.(íÌ®¬ÿÿÿÿÿ8‡âÊž†2
+v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ïºÆ¯8ŠâÊž†2
+p
+java:S22593"NA "NullPointerException" could be thrown; "originalFilename" is nullable here.(ä‰°‰úÿÿÿÿ8¯âÊž†2

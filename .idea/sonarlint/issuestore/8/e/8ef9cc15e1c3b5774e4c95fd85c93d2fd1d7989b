@@ -1,0 +1,7 @@
+
+_
+java:S2259="CA "NullPointerException" could be thrown; "roles" is nullable here.(²™ß8¥Šà‰2
+E	java:S1062"+Replace this use of System.out by a logger.(²ï†¢øÿÿÿÿ
+E	java:S1064"+Replace this use of System.out by a logger.(ûì¼áüÿÿÿÿ
+h
+java:S6204?"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹
