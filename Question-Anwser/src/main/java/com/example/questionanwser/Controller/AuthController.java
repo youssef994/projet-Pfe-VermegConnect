@@ -97,15 +97,7 @@ public class AuthController {
         }
     }
 
-    @DeleteMapping("/deleteUser/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable int id) {
-        try {
-            authService.deleteUser(id);
-            return new ResponseEntity<>("User deleted successfully!", HttpStatus.OK);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("Failed to delete user!", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+
 
     @GetMapping("/getById/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) {
@@ -139,5 +131,45 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/AllUsers")
+    public List<UserCredentials> getAllUsers() {
+        return authService.getAllUsers();
+    }
 
+    @GetMapping("/role")
+    public List<UserCredentials> getUsersByRole(@RequestParam Role role) {
+        return authService.getUsersByRole(role);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserCredentials> getUserById(@PathVariable int id) {
+        Optional<UserCredentials> user = authService.getUserById(id);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping
+    public UserCredentials createUser(@RequestBody UserCredentials user) {
+        return authService.createUser(user);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserCredentials> updateUser(@PathVariable int id, @RequestBody UserCredentials userDetails) {
+        try {
+            UserCredentials updatedUser = authService.updateUser(id, userDetails);
+            return ResponseEntity.ok(updatedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable int id) {
+        authService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/api/user/search")
+    public List<UserCredentials> searchByUsername(@RequestParam("username") String username) {
+        return authService.findByUsernameContainingIgnoreCase(username);
+    }
 }

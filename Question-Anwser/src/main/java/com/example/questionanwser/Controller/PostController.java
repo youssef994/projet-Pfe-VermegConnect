@@ -51,6 +51,7 @@ public class PostController {
             postDTO.setDownvotes(post.getDownvotes());
             postDTO.setTags(post.getTags());
             postDTO.setUsername(post.getUser() != null ? post.getUser().getUsername() : null);
+            postDTO.setTags(post.getTags());
             return postDTO;
         }).collect(Collectors.toList());
 
@@ -130,10 +131,27 @@ public class PostController {
 
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable(value = "id") Long postId) {
-        postService.deletePost(postId);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> deletePost(@PathVariable(value = "id") Long postId, @RequestHeader("Authorization") String token) {
+        try {
+            // Retrieve username from the token
+            String username = jwtService.getUsernameFromToken(token.substring(7)); // Remove "Bearer " from the token
+
+            // Retrieve the post
+            Post post = postService.getPostById(postId);
+
+            // Check if the current user is the owner of the post
+            if (!post.getUser().getUsername().equals(username)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // Return forbidden if user is not the owner
+            }
+
+            // Delete the post
+            postService.deletePost(postId);
+            return ResponseEntity.noContent().build();
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Return error response if something goes wrong
+        }
     }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<Post>> searchPosts(@RequestParam String query) {
@@ -171,6 +189,20 @@ public class PostController {
         PostDTO postDTO = convertToDTO(updatedPost);
         return ResponseEntity.ok(postDTO);
     }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<PostDTO>> getPostsByUserId(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Post> pagedResult = postService.getPostsByUserId(userId, pageable);
+
+        // Convert Page<Post> to Page<PostDTO>
+        List<PostDTO> postDTOs = pagedResult.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+        Page<PostDTO> postDTOPage = new PageImpl<>(postDTOs, pageable, pagedResult.getTotalElements());
+
+        return new ResponseEntity<>(postDTOPage, HttpStatus.OK);
+    }
 
     private PostDTO convertToDTO(Post post) {
         PostDTO postDTO = new PostDTO();
@@ -184,6 +216,41 @@ public class PostController {
         postDTO.setUsername(post.getUser() != null ? post.getUser().getUsername() : null);
         return postDTO;
     }
+    @PostMapping("/{postId}/follow")
+    public ResponseEntity<Void> followPost(@PathVariable Long postId, @RequestHeader("Authorization") String token) {
+        String username = jwtService.getUsernameFromToken(token.substring(7));
+        postService.followPost(postId, username);
+        return ResponseEntity.ok().build();
+    }
 
+    @PostMapping("/{postId}/unfollow")
+    public ResponseEntity<Void> unfollowPost(@PathVariable Long postId, @RequestHeader("Authorization") String token) {
+        String username = jwtService.getUsernameFromToken(token.substring(7));
+        postService.unfollowPost(postId, username);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{postId}/isFollowing")
+    public ResponseEntity<Boolean> isFollowingPost(@PathVariable Long postId, @RequestHeader("Authorization") String token) {
+        String username = jwtService.getUsernameFromToken(token.substring(7)); // Remove "Bearer " from the token
+        boolean isFollowing = postService.isFollowingPost(postId, username);
+        return ResponseEntity.ok(isFollowing);
+    }
+
+    @GetMapping("/followed-posts")
+    public ResponseEntity<Page<PostDTO>> getFollowedPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestHeader("Authorization") String token) {
+
+        String username = jwtService.getUsernameFromToken(token.substring(7)); // Remove "Bearer " from the token
+        Pageable paging = PageRequest.of(page, size);
+        Page<Post> pagedResult = postService.getFollowedPosts(username, paging);
+
+        List<PostDTO> postDTOs = pagedResult.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+        Page<PostDTO> postDTOPage = new PageImpl<>(postDTOs, paging, pagedResult.getTotalElements());
+
+        return new ResponseEntity<>(postDTOPage, HttpStatus.OK);
+    }
 
 }

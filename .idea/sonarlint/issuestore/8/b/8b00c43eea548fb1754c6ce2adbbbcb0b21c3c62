@@ -4,5 +4,3 @@ g	java:S112Q"FDefine and throw a dedicated exception instead of using a generi
 v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ïºÆ¯8©óñÆ€2
 ¦
 java:S4449#"ˆAnnotate the parameter with @javax.annotation.Nullable in constructor declaration, or make sure that null can not be passed as argument.(Ø Ì8àôñÆ€2
-C
-java:S1452e"&Remove usage of generic wildcard type.(ËËğà8ÇõñÆ€2

@@ -63,6 +63,10 @@ public class Post {
     @JsonBackReference(value = "user-posts")
     private UserCredentials user;
 
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "followers", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "username")
+    private Set<String> followers = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {

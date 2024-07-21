@@ -7,16 +7,22 @@ import com.example.questionanwser.Model.UserCredentials;
 import com.example.questionanwser.Repository.AnswerRepository;
 import com.example.questionanwser.Repository.PostRepository;
 import com.example.questionanwser.Repository.UserCredentialRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
 @Service
 public class AnswerService {
-
+    private static final Logger logger = LoggerFactory.getLogger(AnswerService.class);
     @Autowired
     private AnswerRepository answerRepository;
 
@@ -25,6 +31,9 @@ public class AnswerService {
 
     @Autowired
     private UserCredentialRepository userRepository;
+
+    @Autowired
+    private JwtService jwtService;
 
     public List<Answer> getAllAnswers() {
         return answerRepository.findAll();
@@ -105,6 +114,8 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
+
+
     @Transactional
     public Answer validateAnswer(Long answerId, String username) {
         Answer answer = answerRepository.findById(answerId)
@@ -114,19 +125,39 @@ public class AnswerService {
             throw new IllegalArgumentException("This answer is already validated");
         }
 
-        // only the user who created the question can validate an answer
+        // Get the token from the request
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("Authorization");
+
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7); // Remove "Bearer " prefix
+        } else {
+            throw new SecurityException("Token is missing or malformed");
+        }
+
+        logger.info("Token: {}", token);
+
+        // Extract roles from the token
+        List<String> roles = jwtService.getRolesFromToken(token);
+        logger.info("Roles: {}", roles);
+
+        // Only the user who created the question or an ADMIN can validate an answer
         Post post = answer.getPost();
         UserCredentials postUser = post.getUser();
-        if (!postUser.getUsername().equals(username)) {
+        boolean isAdmin = roles.contains("ROLE_ADMIN");
+
+        if (!postUser.getUsername().equals(username) && !isAdmin) {
             throw new SecurityException("You are not authorized to validate this answer");
         }
 
-        // Un-validate any previously validated answers
-        List<Answer> answers = post.getAnswers();
-        for (Answer a : answers) {
-            if (a.isValidated()) {
-                a.setValidated(false);
-                answerRepository.save(a);
+        // Un-validate any previously validated answers if the user is not an admin
+        if (!isAdmin) {
+            List<Answer> answers = post.getAnswers();
+            for (Answer a : answers) {
+                if (a.isValidated()) {
+                    a.setValidated(false);
+                    answerRepository.save(a);
+                }
             }
         }
 
@@ -134,4 +165,8 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
+
+    public List<Answer> searchAnswersByContent(String content) {
+        return answerRepository.findByContentContaining(content);
+    }
 }

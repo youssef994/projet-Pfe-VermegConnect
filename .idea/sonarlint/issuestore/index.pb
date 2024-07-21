@@ -115,3 +115,5 @@ OQuestion-Anwser/src/main/java/com/example/questionanwser/Model/UserProfile.java
 ^Question-Anwser/src/main/java/com/example/questionanwser/Repository/UserProfileRepository.java,0\2\02a0a4c92babb38c601a01bac1cf64dc8badc4c3
 l
 <Question-Anwser/src/main/java/dto/ChangePasswordRequest.java,f\6\f66abf9034d35f561eb96876a7c15460116a4818
+h
+8Question-Anwser/src/main/java/dto/UserStatisticsDTO.java,1\a\1a50d03afae441ad7f58f9d83023d282c620d768

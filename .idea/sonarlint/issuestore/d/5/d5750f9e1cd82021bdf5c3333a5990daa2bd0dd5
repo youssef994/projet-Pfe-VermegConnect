@@ -3,14 +3,15 @@ g	java:S112."FDefine and throw a dedicated exception instead of using a generi
 b	java:S1122"FDefine and throw a dedicated exception instead of using a generic one.(ş¥Áá8¡©—¤‡2
 b	java:S112E"FDefine and throw a dedicated exception instead of using a generic one.(ë‚¤8¢©—¤‡2
 a	java:S112u"FDefine and throw a dedicated exception instead of using a generic one.(ì£ÍX8¢©—¤‡2
-h	java:S112©"FDefine and throw a dedicated exception instead of using a generic one.(ª‡°íûÿÿÿÿ8¢©—¤‡2
-h	java:S112¬"FDefine and throw a dedicated exception instead of using a generic one.(©š´µûÿÿÿÿ8 ˜˜¤‡2
+h	java:S112§"FDefine and throw a dedicated exception instead of using a generic one.(ª‡°íûÿÿÿÿ8¢©—¤‡2
+h	java:S112ª"FDefine and throw a dedicated exception instead of using a generic one.(©š´µûÿÿÿÿ8 ˜˜¤‡2
+h	java:S112È"FDefine and throw a dedicated exception instead of using a generic one.(©š´µûÿÿÿÿ8İ¹¹ŒŠ2
 T
-java:S2629¢"7Use the built-in formatting to construct this argument.(Ô„Ç8¨˜˜¤‡2
+java:S2629 "7Use the built-in formatting to construct this argument.(Ô„Ç8¨˜˜¤‡2
 U
-java:S2629¥"7Use the built-in formatting to construct this argument.(·øÇ²8¨˜˜¤‡2
+java:S2629£"7Use the built-in formatting to construct this argument.(·øÇ²8¨˜˜¤‡2
 Z
-java:S2629¨"7Use the built-in formatting to construct this argument.(›ÁëŞûÿÿÿÿ8©˜˜¤‡2
+java:S2629¦"7Use the built-in formatting to construct this argument.(›ÁëŞûÿÿÿÿ8©˜˜¤‡2
 {	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(õ†·½ıÿÿÿÿ8©©—¤‡2
 z
 java:S2139C"XEither log this exception and handle it, or rethrow it with some contextual information.(±Ÿ—±ÿÿÿÿÿ8ê©—¤‡2
@@ -19,12 +20,12 @@ java:S2140h")Use "java.util.Random.nextInt()" instead.(Ü¡“J8ò©—¤‡2
 ^
 java:S3457i"AFormat specifiers should be used instead of string concatenation.(‚Èàª8ó©—¤‡2
 s
-java:S6201‘"PReplace this instanceof check and cast with 'instanceof UserDetails userdetails'(ñ¢Ÿøÿÿÿÿ8ş©—¤‡2
+java:S6201"PReplace this instanceof check and cast with 'instanceof UserDetails userdetails'(ñ¢Ÿøÿÿÿÿ8ş©—¤‡2
 n
-java:S6201œ"PReplace this instanceof check and cast with 'instanceof UserDetails userdetails'(Ê˜Â¶8‚ª—¤‡2
+java:S6201š"PReplace this instanceof check and cast with 'instanceof UserDetails userdetails'(Ê˜Â¶8‚ª—¤‡2
 ^
-java:S3457¢"AFormat specifiers should be used instead of string concatenation.(Ô„Ç8æš˜¤‡2
+java:S3457 "AFormat specifiers should be used instead of string concatenation.(Ô„Ç8æš˜¤‡2
 _
-java:S3457¥"AFormat specifiers should be used instead of string concatenation.(·øÇ²8èš˜¤‡2
+java:S3457£"AFormat specifiers should be used instead of string concatenation.(·øÇ²8èš˜¤‡2
 d
-java:S3457¨"AFormat specifiers should be used instead of string concatenation.(›ÁëŞûÿÿÿÿ8éš˜¤‡2
+java:S3457¦"AFormat specifiers should be used instead of string concatenation.(›ÁëŞûÿÿÿÿ8éš˜¤‡2

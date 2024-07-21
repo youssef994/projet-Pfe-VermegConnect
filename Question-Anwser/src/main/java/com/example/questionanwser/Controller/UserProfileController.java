@@ -3,6 +3,7 @@ package com.example.questionanwser.Controller;
 import com.example.questionanwser.Model.UserProfile;
 import com.example.questionanwser.Service.UserProfileService;
 import dto.UpdateUserProfileDTO;
+import dto.UserStatisticsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,4 +67,54 @@ public class UserProfileController {
             throw new RuntimeException("Failed to save file", e);
         }
     }
+
+
+
+
+    @GetMapping("/all/{userId}")
+    public UserStatistics getAllStatisticsByUserId(@PathVariable int userId, @RequestParam String username) {
+        Long upvotes = userProfileService.getTotalUpvotesByUser(username);
+        Long downvotes = userProfileService.getTotalDownvotesByUser(username);
+        Long followedPosts = userProfileService.countFollowedPostsByUsername(username);
+        Long posts = userProfileService.countPostsByUserId(userId);
+        Long answers = userProfileService.countAnswersByUserId(userId);
+
+        return new UserStatistics(upvotes, downvotes,followedPosts, posts, answers);
+    }
+
+    public static class UserStatistics {
+        public Long upvotes;
+        public Long downvotes;
+        public Long followedPosts;
+        public Long posts;
+        public Long answers;
+
+        public UserStatistics(Long upvotes, Long downvotes, Long followedPosts, Long posts, Long answers) {
+            this.upvotes = upvotes;
+            this.downvotes = downvotes;
+            this.followedPosts = followedPosts;
+            this.posts = posts;
+            this.answers = answers;
+        }
+    }
+
+    @GetMapping("/profile-picture/{username}")
+    public ResponseEntity<String> getProfilePictureByUsername(@PathVariable String username) {
+        String profilePictureUrl = userProfileService.getProfilePictureByUsername(username);
+        if (profilePictureUrl != null) {
+            return ResponseEntity.ok(profilePictureUrl);
+        } else {
+            return ResponseEntity.notFound().build(); // or return a default picture URL
+        }
+    }
+    @GetMapping("/id/{username}")
+    public ResponseEntity<Integer> getUserIdByUsername(@PathVariable String username) {
+        Integer userId = userProfileService.getUserIdByUsername(username);
+        if (userId != null) {
+            return ResponseEntity.ok(userId);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

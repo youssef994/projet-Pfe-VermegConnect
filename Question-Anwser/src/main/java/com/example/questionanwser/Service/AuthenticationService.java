@@ -126,9 +126,7 @@ public class AuthenticationService {
     public void validate(String token) {
         jwtService.validateToken(token);
     }
-    public void deleteUser(int id) {
-        userCredentialRepository.deleteById(id);
-    }
+
 
     public Optional<UserCredentials> getUserById(Integer id) {
         return userCredentialRepository.findById(id);
@@ -171,5 +169,43 @@ public class AuthenticationService {
         } else {
             throw new RuntimeException("User not found");
         }
+    }
+
+    public List<UserCredentials> getAllUsers() {
+        return userCredentialRepository.findAll();
+    }
+
+    public List<UserCredentials> getUsersByRole(Role role) {
+        return userCredentialRepository.findByRole(role);
+    }
+
+    public Optional<UserCredentials> getUserById(int id) {
+        return userCredentialRepository.findById(id);
+    }
+
+    public UserCredentials createUser(UserCredentials user) {
+        return userCredentialRepository.save(user);
+    }
+
+    public UserCredentials updateUser(int id, UserCredentials userDetails) {
+        Optional<UserCredentials> userOptional = userCredentialRepository.findById(id);
+        if (userOptional.isPresent()) {
+            UserCredentials user = userOptional.get();
+            user.setUsername(userDetails.getUsername());
+            user.setEmail(userDetails.getEmail());
+            user.setRole(userDetails.getRole());
+            user.setIsVerified(userDetails.isVerified());
+            return userCredentialRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    public void deleteUser(int id) {
+        userCredentialRepository.deleteById(id);
+    }
+
+    public List<UserCredentials> findByUsernameContainingIgnoreCase(String username) {
+        return userCredentialRepository.findByUsernameContainingIgnoreCaseOrderByUsername(username);
     }
 }

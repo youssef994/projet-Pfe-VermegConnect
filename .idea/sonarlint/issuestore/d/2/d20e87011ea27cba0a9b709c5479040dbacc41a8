@@ -1,6 +1,10 @@
 
 |
-java:S1192#"ZDefine a constant instead of duplicating this literal "Answer not found with id " 3 times.(ĞÓîúÿÿÿÿ8ÎÀÀ³ƒ2
+java:S1192,"ZDefine a constant instead of duplicating this literal "Answer not found with id " 3 times.(ĞÓîúÿÿÿÿ8ìˆŞáŒ2
 }
-java:S1192G"[Define a constant instead of duplicating this literal "Answer not found with id: " 3 times.(ˆíÒşúÿÿÿÿ8¥èÏŠ„2
-{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(õ†·½ıÿÿÿÿ8šô—³ƒ2
+java:S1192P"[Define a constant instead of duplicating this literal "Answer not found with id: " 3 times.(ˆíÒşúÿÿÿÿ8íˆŞáŒ2
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(õ†·½ıÿÿÿÿ8ÊÀáŒ2
+p
+java:S2259"RA "NullPointerException" could be thrown; "getRequestAttributes" is nullable here.(–”åÍ8ÔËüáŒ2
+y
+java:S1128"\Remove this unused import 'org.springframework.security.core.context.SecurityContextHolder'.(ŒÄæë8®‰ŞáŒ2

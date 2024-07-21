@@ -22,10 +22,7 @@ public class AnswerController {
     @Autowired
     private JwtService jwtService;
 
-    @GetMapping
-    public List<Answer> getAllAnswers() {
-        return answerService.getAllAnswers();
-    }
+
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<AnswerDTO>> getAnswersByPostId(@PathVariable Long postId) {
         List<Answer> answers = answerService.getAnswersByPostId(postId);
@@ -85,7 +82,12 @@ public class AnswerController {
         return ResponseEntity.ok(convertToDTO(validatedAnswer));
     }
 
-
+    @GetMapping("/search")
+    public ResponseEntity<List<AnswerDTO>> searchAnswersByContent(@RequestParam String content) {
+        List<Answer> answers = answerService.searchAnswersByContent(content);
+        List<AnswerDTO> answerDTOs = answers.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(answerDTOs);
+    }
 
     private AnswerDTO convertToDTO(Answer answer) {
         AnswerDTO answerDTO = new AnswerDTO();

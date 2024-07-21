@@ -2,6 +2,7 @@ package com.example.questionanwser.Service;
 
 import com.example.questionanwser.Model.Post;
 import com.example.questionanwser.Model.Tags;
+import com.example.questionanwser.Model.UserCredentials;
 import com.example.questionanwser.Repository.PostRepository;
 import com.example.questionanwser.Repository.TagsRepository;
 import dto.PostRequest;
@@ -141,4 +142,37 @@ public class PostService {
 
         return postRepository.save(post);
     }
+
+    @Transactional
+    public Page<Post> getPostsByUserId(Long userId, Pageable pageable) {
+        return postRepository.findByUserId(userId, pageable);
+    }
+
+
+    @Transactional
+    public void followPost(Long postId, String username) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+        post.getFollowers().add(username);
+        postRepository.save(post);
+    }
+
+    @Transactional
+    public void unfollowPost(Long postId, String username) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+        post.getFollowers().remove(username);
+        postRepository.save(post);
+    }
+    @Transactional
+    public boolean isFollowingPost(Long postId, String username) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
+        return post.getFollowers().contains(username);
+    }
+
+    public Page<Post> getFollowedPosts(String username, Pageable pageable) {
+        return postRepository.findFollowedPostsByUsername(username, pageable);
+    }
+
 }
