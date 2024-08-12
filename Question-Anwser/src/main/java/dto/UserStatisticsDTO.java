@@ -9,11 +9,16 @@ import lombok.*;
 @Getter
 @Setter
 public class UserStatisticsDTO {
-    private int totalPosts;
-    private int totalLikes;
-    private int totalDislikes;
-    private int totalAnswers;
-    private int totalFollowedPosts;
+
+
+
+        private long followedPosts;
+        private long downvotes;
+        private long upvotes;
+        private long answers;
+        private long posts;
+
+
 
 
 }

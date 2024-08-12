@@ -22,7 +22,11 @@ public class AnswerController {
     @Autowired
     private JwtService jwtService;
 
-
+    @GetMapping
+    public ResponseEntity<List<AnswerDTO>> getAllAnswers() {
+        List<AnswerDTO> answerDTOs = answerService.getAllAnswers().stream().map(this::convertToDTO).collect(Collectors.toList());
+        return ResponseEntity.ok(answerDTOs);
+    }
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<AnswerDTO>> getAnswersByPostId(@PathVariable Long postId) {
         List<Answer> answers = answerService.getAnswersByPostId(postId);
@@ -99,6 +103,27 @@ public class AnswerController {
         answerDTO.setDownvotes(answer.getDownvotes());
         answerDTO.setPostId(answer.getPost().getPostId());
         answerDTO.setUsername(answer.getUser() != null ? answer.getUser().getUsername() : null);
+        answerDTO.setUpvoters(answer.getUpvoters());
+        answerDTO.setDownvoters(answer.getDownvoters());
         return answerDTO;
     }
+
+    @GetMapping("/upvotes/count")
+    public ResponseEntity<Integer> getTotalUpvotesByUsername(@RequestParam String username) {
+        int count = answerService.getTotalUpvotesByUsername(username);
+        return ResponseEntity.ok(count);
+    }
+
+    // Endpoint to get total downvotes by a user across all answers
+    @GetMapping("/downvotes/count")
+    public ResponseEntity<Integer> getTotalDownvotesByUsername(@RequestParam String username) {
+        int count = answerService.getTotalDownvotesByUsername(username);
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/count")
+    public int getUserAnswersCount(@RequestParam("userId") Long userId) {
+        return answerService.getUserAnswersCount(userId);
+    }
+
 }

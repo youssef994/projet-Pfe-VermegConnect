@@ -61,4 +61,8 @@ public class Answer {
     protected void onCreate() {
         createdAt = new Date();
     }
+
+    public Integer getUserId() {
+        return user != null ? user.getId() : null;
+    }
 }

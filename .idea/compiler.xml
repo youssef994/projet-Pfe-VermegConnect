@@ -10,12 +10,16 @@
         <module name="api-gateway" />
         <module name="Question-Anwser" />
         <module name="Eureka-server" />
+        <module name="Analytics" />
+        <module name="Notification" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Analytics" target="17" />
       <module name="api-gateway" target="17" />
       <module name="Authentication" target="17" />
       <module name="Eureka-server" target="17" />
+      <module name="Notification" target="17" />
       <module name="Question-Anwser" target="17" />
       <module name="Zuul" target="17" />
       <module name="Zuul-gateway" target="17" />
@@ -23,8 +27,10 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Analytics" options="-parameters" />
       <module name="Authentication" options="-parameters" />
       <module name="Eureka-server" options="-parameters" />
+      <module name="Notification" options="-parameters" />
       <module name="Question-Anwser" options="-parameters" />
       <module name="Zuul" options="-parameters" />
       <module name="Zuul-gateway" options="-parameters" />

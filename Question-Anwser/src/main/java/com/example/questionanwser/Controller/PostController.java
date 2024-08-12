@@ -5,6 +5,7 @@ import com.example.questionanwser.Model.UserCredentials;
 import com.example.questionanwser.Service.AuthenticationService;
 import com.example.questionanwser.Service.JwtService;
 import com.example.questionanwser.Service.PostService;
+import com.example.questionanwser.Service.UserProfileService;
 import dto.PostDTO;
 import dto.PostRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,8 @@ public class PostController {
         @Autowired
     private JwtService jwtService;
 
-
+    @Autowired
+    private UserProfileService userProfileService;
 
     @GetMapping
     public ResponseEntity<Page<PostDTO>> getAllPosts(
@@ -251,6 +253,28 @@ public class PostController {
         Page<PostDTO> postDTOPage = new PageImpl<>(postDTOs, paging, pagedResult.getTotalElements());
 
         return new ResponseEntity<>(postDTOPage, HttpStatus.OK);
+    }
+    @GetMapping("/count/by-user")
+    public ResponseEntity<Long> countPostsByUserId(@RequestParam int userId) {
+        Long count = postService.countPostsByUserId(userId);
+        return ResponseEntity.ok(count);
+    }
+    @GetMapping("/upvotes/count")
+    public ResponseEntity<Integer> getTotalUpvotesByUsername(@RequestParam String username) {
+        int count = postService.getTotalUpvotesByUsername(username);
+        return ResponseEntity.ok(count);
+    }
+
+
+    @GetMapping("/downvotes/count")
+    public ResponseEntity<Integer> getTotalDownvotesByUsername(@RequestParam String username) {
+        int count = postService.getTotalDownvotesByUsername(username);
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/followed/count")
+    public Long countFollowedPostsByUsername(@RequestParam String username) {
+        return userProfileService.countFollowedPostsByUsername(username);
     }
 
 }

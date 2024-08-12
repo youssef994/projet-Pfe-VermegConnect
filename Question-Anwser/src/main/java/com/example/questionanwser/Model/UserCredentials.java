@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -24,6 +25,12 @@ public class UserCredentials {
     private String email;
     private String password;
     private String verificationCode;
+    @Column(name = "registration_date")
+    private LocalDate createdDate;
+    @Column(name = "last_login_date")
+    private LocalDateTime lastLoginDate;
+
+    private int loginCount;
     private boolean isVerified = false;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

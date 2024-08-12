@@ -1,10 +1,12 @@
 package com.example.questionanwser.Service;
 
+import com.example.questionanwser.Model.Notification;
 import com.example.questionanwser.Model.Post;
 import com.example.questionanwser.Model.Tags;
 import com.example.questionanwser.Model.UserCredentials;
 import com.example.questionanwser.Repository.PostRepository;
 import com.example.questionanwser.Repository.TagsRepository;
+import com.example.questionanwser.Repository.UserCredentialRepository;
 import dto.PostRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +33,10 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private TagsRepository tagsRepository;
+
+    @Autowired
+    private RestTemplate questionAnswerRestTemplate;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -117,8 +125,12 @@ public class PostService {
         post.getUpvoters().add(username);
         post.setUpvotes(post.getUpvotes() + 1);
 
+        // Notify the user about the upvote
+        notifyUserAboutUpvote(post.getUserId(), post);
+
         return postRepository.save(post);
     }
+
 
     @Transactional
     public Post downvotePost(Long postId, String username) {
@@ -139,13 +151,13 @@ public class PostService {
         // Add the user to the downvoters set
         post.getDownvoters().add(username);
         post.setDownvotes(post.getDownvotes() + 1);
-
+        // Notify the user about the downvote
+        notifyUserAboutDownvote(post.getUserId(), post);
         return postRepository.save(post);
     }
 
-    @Transactional
-    public Page<Post> getPostsByUserId(Long userId, Pageable pageable) {
-        return postRepository.findByUserId(userId, pageable);
+    public Page<Post> getPostsByUserId(Long userId,Pageable pageable) {
+        return postRepository.findByUser_Id(userId,pageable); // or use custom query if needed
     }
 
 
@@ -155,6 +167,8 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + postId));
         post.getFollowers().add(username);
         postRepository.save(post);
+        // Notify the user about the new follower
+        notifyUserAboutFollow(post.getUserId(), post);
     }
 
     @Transactional
@@ -173,6 +187,42 @@ public class PostService {
 
     public Page<Post> getFollowedPosts(String username, Pageable pageable) {
         return postRepository.findFollowedPostsByUsername(username, pageable);
+    }
+    public Long countPostsByUserId(int userId) {
+        return postRepository.countByUser_Id(userId);
+    }
+
+
+    public int getTotalUpvotesByUsername(String username) {
+        return postRepository.countTotalUpvotesByUsername(username);
+    }
+
+    public int getTotalDownvotesByUsername(String username) {
+        return postRepository.countTotalDownvotesByUsername(username);
+    }
+
+
+    public void notifyUserAboutUpvote(Integer userId, Post post) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("UPVOTE");
+        notification.setContent("Your post was upvoted!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
+    }
+
+    public void notifyUserAboutDownvote(Integer userId, Post post) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("DOWNVOTE");
+        notification.setContent("Your post was downvoted!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
+    }
+    public void notifyUserAboutFollow(Integer userId, Post post) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("FOLLOW");
+        notification.setContent("Your post was followed!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 
 }

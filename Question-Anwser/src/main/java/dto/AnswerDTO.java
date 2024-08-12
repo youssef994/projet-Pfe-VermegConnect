@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,4 +18,6 @@ public class AnswerDTO {
     private int downvotes;
     private Long postId;
     private String username; // Username of the user who created the answer
+    private Set<String> upvoters;
+    private Set<String> downvoters;
 }

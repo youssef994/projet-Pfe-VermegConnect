@@ -3,6 +3,7 @@ package com.example.questionanwser.Service;
 import com.example.questionanwser.Model.Role;
 import com.example.questionanwser.Model.UserCredentials;
 import com.example.questionanwser.Repository.UserCredentialRepository;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,6 +59,9 @@ public class AuthenticationService {
 
             // Generate verif code
             user.setVerificationCode(generateNumericCode(6));
+
+            // Set created date
+            user.setCreatedDate(LocalDate.now());
 
             // Save
             UserCredentials savedUser = userCredentialRepository.save(user);
@@ -195,6 +202,7 @@ public class AuthenticationService {
             user.setEmail(userDetails.getEmail());
             user.setRole(userDetails.getRole());
             user.setIsVerified(userDetails.isVerified());
+            user.setLastLoginDate(userDetails.getLastLoginDate());
             return userCredentialRepository.save(user);
         } else {
             throw new RuntimeException("User not found");
@@ -207,5 +215,29 @@ public class AuthenticationService {
 
     public List<UserCredentials> findByUsernameContainingIgnoreCase(String username) {
         return userCredentialRepository.findByUsernameContainingIgnoreCaseOrderByUsername(username);
+    }
+
+    public long countNewUsersToday() {
+        LocalDate today = LocalDate.now();
+        return userCredentialRepository.countByCreatedDate(today);
+    }
+
+
+
+    public long countNewUsersThisMonth() {
+        LocalDate startOfMonth = LocalDate.now().withDayOfMonth(1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+        return userCredentialRepository.countByDateRange(startOfMonth, endOfMonth);
+    }
+
+    public long countActiveUsers() {
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        return userCredentialRepository.countActiveUsersBetween(thirtyDaysAgo, LocalDateTime.now());
+    }
+
+
+
+    public long countTotalUsers() {
+        return userCredentialRepository.countTotalUsers();
     }
 }

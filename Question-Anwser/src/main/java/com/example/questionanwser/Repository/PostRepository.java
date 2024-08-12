@@ -54,6 +54,7 @@ ORDER BY
     List<Post> findBySearch(@Param("q") String query);
 
     Page<Post> findByUserId(Long userId, Pageable pageable);
+    Page<Post> findByUser_Id(Long userId,Pageable pageable);
 
     @Query(value = "SELECT p.* FROM posts p INNER JOIN followers f ON p.post_id = f.post_id WHERE f.username = :username",
             countQuery = "SELECT count(p.post_id) FROM posts p INNER JOIN followers f ON p.post_id = f.post_id WHERE f.username = :username",
@@ -69,7 +70,16 @@ ORDER BY
     @Query("SELECT COUNT(p) FROM Post p WHERE :username MEMBER OF p.followers")
     Long countFollowedPostsByUser(@Param("username") String username);
 
-    @Query("SELECT COUNT(p) FROM Post p WHERE p.user.id = :userId")
-    Long countPostsByUserId(@Param("userId") int userId);
+
+
+
+
+    @Query("SELECT COUNT(p) FROM Post p JOIN p.upvoters u WHERE u = :username")
+    int countTotalUpvotesByUsername(@Param("username") String username);
+
+    @Query("SELECT COUNT(p) FROM Post p JOIN p.downvoters d WHERE d = :username")
+    int countTotalDownvotesByUsername(@Param("username") String username);
+
+    Long countByUser_Id(int userId);
 
 }

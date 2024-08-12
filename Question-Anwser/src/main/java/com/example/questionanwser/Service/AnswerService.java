@@ -1,7 +1,7 @@
 package com.example.questionanwser.Service;
 
-
 import com.example.questionanwser.Model.Answer;
+import com.example.questionanwser.Model.Notification;
 import com.example.questionanwser.Model.Post;
 import com.example.questionanwser.Model.UserCredentials;
 import com.example.questionanwser.Repository.AnswerRepository;
@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -23,6 +23,7 @@ import java.util.List;
 @Service
 public class AnswerService {
     private static final Logger logger = LoggerFactory.getLogger(AnswerService.class);
+
     @Autowired
     private AnswerRepository answerRepository;
 
@@ -31,6 +32,9 @@ public class AnswerService {
 
     @Autowired
     private UserCredentialRepository userRepository;
+
+    @Autowired
+    private RestTemplate questionAnswerRestTemplate;
 
     @Autowired
     private JwtService jwtService;
@@ -53,7 +57,13 @@ public class AnswerService {
 
         answer.setPost(post);
         answer.setUser(user);
-        return answerRepository.save(answer);
+
+        Answer savedAnswer = answerRepository.save(answer);
+
+        // Notify user about the new answer
+        notifyUserAboutNewAnswer(post.getUserId(), savedAnswer);
+
+        return savedAnswer;
     }
 
     public Answer updateAnswer(Long answerId, Answer answerDetails) {
@@ -70,6 +80,7 @@ public class AnswerService {
 
         answerRepository.delete(answer);
     }
+
     public List<Answer> getAnswersByPostId(Long postId) {
         return answerRepository.findByPost_PostId(postId);
     }
@@ -91,6 +102,9 @@ public class AnswerService {
         answer.getUpvoters().add(username);
         answer.setUpvotes(answer.getUpvotes() + 1);
 
+        // Notify user about the upvote
+        notifyUserAboutUpvote(answer.getUserId(), answer);
+
         return answerRepository.save(answer);
     }
 
@@ -111,10 +125,11 @@ public class AnswerService {
         answer.getDownvoters().add(username);
         answer.setDownvotes(answer.getDownvotes() + 1);
 
+        // Notify user about the downvote
+        notifyUserAboutDownvote(answer.getUserId(), answer);
+
         return answerRepository.save(answer);
     }
-
-
 
     @Transactional
     public Answer validateAnswer(Long answerId, String username) {
@@ -165,8 +180,43 @@ public class AnswerService {
         return answerRepository.save(answer);
     }
 
-
     public List<Answer> searchAnswersByContent(String content) {
         return answerRepository.findByContentContaining(content);
+    }
+
+    public int getTotalUpvotesByUsername(String username) {
+        return answerRepository.countTotalUpvotesByUsername(username);
+    }
+
+    public int getTotalDownvotesByUsername(String username) {
+        return answerRepository.countTotalDownvotesByUsername(username);
+    }
+
+    public int getUserAnswersCount(Long userId) {
+        return answerRepository.countAnswersByUserId(userId);
+    }
+
+    public void notifyUserAboutNewAnswer(Integer userId, Answer answer) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("NEW_ANSWER");
+        notification.setContent("Your post received a new answer!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
+    }
+
+    public void notifyUserAboutUpvote(Integer userId, Answer answer) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("UPVOTE");
+        notification.setContent("Your answer was upvoted!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
+    }
+
+    public void notifyUserAboutDownvote(Integer userId, Answer answer) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("DOWNVOTE");
+        notification.setContent("Your answer was downvoted!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 }

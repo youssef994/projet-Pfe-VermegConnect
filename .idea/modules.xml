@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Analytics/Analytics.iml" filepath="$PROJECT_DIR$/Analytics/Analytics.iml" />
       <module fileurl="file://$PROJECT_DIR$/Authentication/Authentication.iml" filepath="$PROJECT_DIR$/Authentication/Authentication.iml" />
       <module fileurl="file://$PROJECT_DIR$/Eureka-server/Eureka-server.iml" filepath="$PROJECT_DIR$/Eureka-server/Eureka-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Notification/Notification.iml" filepath="$PROJECT_DIR$/Notification/Notification.iml" />
       <module fileurl="file://$PROJECT_DIR$/Question-Anwser/Question-Anwser.iml" filepath="$PROJECT_DIR$/Question-Anwser/Question-Anwser.iml" />
       <module fileurl="file://$PROJECT_DIR$/api-gateway/api-gateway.iml" filepath="$PROJECT_DIR$/api-gateway/api-gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/stage project.iml" filepath="$PROJECT_DIR$/.idea/stage project.iml" />

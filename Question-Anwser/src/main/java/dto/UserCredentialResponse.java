@@ -11,4 +11,7 @@ import lombok.*;
 public class UserCredentialResponse {
     private String token;
     private UserCredentials user;
+
+    public void setLoginCount(int loginCount) {
+    }
 }

@@ -24,5 +24,12 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     Long countAnswersByUserId(@Param("userId") int userId);
     @Query("SELECT a FROM Answer a WHERE LOWER(a.content) LIKE LOWER(CONCAT('%', :content, '%'))")
     List<Answer> findByContentContaining(@Param("content") String content);
+    @Query("SELECT COUNT(a) FROM Answer a JOIN a.upvoters u WHERE u = :username")
+    int countTotalUpvotesByUsername(@Param("username") String username);
 
+    @Query("SELECT COUNT(a) FROM Answer a JOIN a.downvoters d WHERE d = :username")
+    int countTotalDownvotesByUsername(@Param("username") String username);
+
+    @Query("SELECT COUNT(a) FROM Answer a WHERE a.user.id = :userId")
+    int countAnswersByUserId(@Param("userId") Long userId);
 }

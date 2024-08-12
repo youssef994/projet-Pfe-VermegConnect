@@ -13,11 +13,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -59,7 +60,8 @@ public class AuthController {
 
     @PostMapping("/token")
     public ResponseEntity<UserCredentialResponse> getToken(@RequestBody AuthRequest authRequest) {
-        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
 
         if (authenticate.isAuthenticated()) {
             String token = authService.generateToken(authRequest.getUsername());
@@ -69,16 +71,22 @@ public class AuthController {
                 throw new RuntimeException("User not found.");
             }
 
+            UserCredentials user = userOptional.get();
+            user.setLastLoginDate(LocalDateTime.now());
+            user.setLoginCount(user.getLoginCount() + 1); // Increment login count
+            authService.updateUser(user.getId(), user);
+
             UserCredentialResponse response = new UserCredentialResponse();
             response.setToken(token);
+            response.setLoginCount(user.getLoginCount()); // Set login count in the response
             UserCredentials safeUser = new UserCredentials();
-            BeanUtils.copyProperties(userOptional.get(), safeUser);
+            BeanUtils.copyProperties(user, safeUser);
             safeUser.setPassword(null);
             response.setUser(safeUser);
 
             return ResponseEntity.ok(response);
         } else {
-            throw new RuntimeException("invalid access");
+            throw new RuntimeException("Invalid access");
         }
     }
 

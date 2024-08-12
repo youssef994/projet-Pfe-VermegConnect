@@ -1,8 +1,18 @@
 
 {
-java:S1192)"YDefine a constant instead of duplicating this literal "Post not found with id: " 7 times.(Üƒú„øÿÿÿÿ8²¿ÀÁ‰2
-{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(õ†·½ıÿÿÿÿ8´¿ÀÁ‰2
+java:S11921"YDefine a constant instead of duplicating this literal "Post not found with id: " 7 times.(Üƒú„øÿÿÿÿ8Ê—Å”2
+‚
+java:S1192Ò"dDefine a constant instead of duplicating this literal "http://localhost:8085/notifications" 3 times.(ìöÚõ8Ë—Å”2
+{	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(õ†·½ıÿÿÿÿ8Ï—Å”2
 Q
-java:S2201S"/The return value of "orElseThrow" must be used.(Üƒú„øÿÿÿÿ8Ú¿ÀÁ‰2
+java:S2201["/The return value of "orElseThrow" must be used.(Üƒú„øÿÿÿÿ8µ˜Å”2
+I
+java:S1172Í"+Remove this unused method parameter "post".(´‚ø 8Ï˜Å”2
+N
+java:S1172Õ"+Remove this unused method parameter "post".(Šı¹Üùÿÿÿÿ8Ô˜Å”2
+N
+java:S1172Ü"+Remove this unused method parameter "post".(÷åø¦ÿÿÿÿÿ8Ö˜Å”2
 o
-java:S1128"MRemove this unused import 'com.example.questionanwser.Model.UserCredentials'.(–ó¥ğûÿÿÿÿ8´œáâ‰2
+java:S1128"MRemove this unused import 'com.example.questionanwser.Model.UserCredentials'.(–ó¥ğûÿÿÿÿ8º¥¡””2
+}
+java:S1128	"[Remove this unused import 'com.example.questionanwser.Repository.UserCredentialRepository'.(´øş÷øÿÿÿÿ8½¥¡””2

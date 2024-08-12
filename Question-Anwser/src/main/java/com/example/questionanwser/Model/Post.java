@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,4 +71,9 @@ public class Post {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
+    public Integer getUserId() {
+        return user != null ? user.getId() : null;
+    }
+
 }

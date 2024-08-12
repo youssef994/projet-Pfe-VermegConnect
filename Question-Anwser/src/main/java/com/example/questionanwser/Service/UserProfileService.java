@@ -73,7 +73,7 @@ public class UserProfileService {
 
 
     public Long countPostsByUserId(int userId) {
-        return postRepository.countPostsByUserId(userId);
+        return postRepository.countByUser_Id(userId);
     }
 
     public Long countAnswersByUserId(int userId) {
