@@ -1,21 +1,21 @@
 package com.example.questionanwser.Service;
 
-import com.example.questionanwser.Model.Notification;
-import com.example.questionanwser.Model.Post;
-import com.example.questionanwser.Model.Tags;
-import com.example.questionanwser.Model.UserCredentials;
+import com.example.questionanwser.Model.*;
 import com.example.questionanwser.Repository.PostRepository;
 import com.example.questionanwser.Repository.TagsRepository;
 import com.example.questionanwser.Repository.UserCredentialRepository;
+import dto.PostDTO;
 import dto.PostRequest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.Join;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -126,7 +126,7 @@ public class PostService {
         post.setUpvotes(post.getUpvotes() + 1);
 
         // Notify the user about the upvote
-        notifyUserAboutUpvote(post.getUserId(), post);
+        notifyUserAboutUpvote(post.getUserId(), post, username);
 
         return postRepository.save(post);
     }
@@ -152,7 +152,7 @@ public class PostService {
         post.getDownvoters().add(username);
         post.setDownvotes(post.getDownvotes() + 1);
         // Notify the user about the downvote
-        notifyUserAboutDownvote(post.getUserId(), post);
+        notifyUserAboutDownvote(post.getUserId(), post, username);
         return postRepository.save(post);
     }
 
@@ -168,7 +168,7 @@ public class PostService {
         post.getFollowers().add(username);
         postRepository.save(post);
         // Notify the user about the new follower
-        notifyUserAboutFollow(post.getUserId(), post);
+        notifyUserAboutFollow(post.getUserId(), post, username);
     }
 
     @Transactional
@@ -202,27 +202,99 @@ public class PostService {
     }
 
 
-    public void notifyUserAboutUpvote(Integer userId, Post post) {
+    public void notifyUserAboutUpvote(Integer userId, Post post, String username) {
         Notification notification = new Notification();
         notification.setUserId(Long.valueOf(userId));
         notification.setType("UPVOTE");
-        notification.setContent("Your post was upvoted!");
+        notification.setContent(username + " upvoted your post!");
         questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 
-    public void notifyUserAboutDownvote(Integer userId, Post post) {
+    public void notifyUserAboutDownvote(Integer userId, Post post, String username) {
         Notification notification = new Notification();
         notification.setUserId(Long.valueOf(userId));
         notification.setType("DOWNVOTE");
-        notification.setContent("Your post was downvoted!");
-        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
-    }
-    public void notifyUserAboutFollow(Integer userId, Post post) {
-        Notification notification = new Notification();
-        notification.setUserId(Long.valueOf(userId));
-        notification.setType("FOLLOW");
-        notification.setContent("Your post was followed!");
+        notification.setContent(username + " downvoted your post!");
         questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 
+    public void notifyUserAboutFollow(Integer userId, Post post, String username) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("FOLLOW");
+        notification.setContent(username + " followed your post!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
+    }
+    public Page<PostDTO> filterAndSortPosts(String sortBy, Boolean validatedAnswer, List<String> tags, int page, int size) {
+        // Create Pageable with sorting based on sortBy parameter
+        Sort sort = Sort.unsorted();
+        if ("newest".equals(sortBy)) {
+            sort = Sort.by(Sort.Order.desc("createdAt"));
+        } else if ("oldest".equals(sortBy)) {
+            sort = Sort.by(Sort.Order.asc("createdAt"));
+        } else if ("recent".equals(sortBy)) {
+            sort = Sort.by(Sort.Order.desc("lastAnswerDate"));
+        } else if ("popular".equals(sortBy)) {
+            sort = Sort.by(Sort.Order.desc("upvotes"));
+        }
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        // Build Specifications
+        Specification<Post> spec = Specification
+                .where(withValidatedAnswer(validatedAnswer))
+                .and(withTags(tags));
+
+        Page<Post> postPage = postRepository.findAll(spec, pageable);
+
+        // Convert the Page of Post entities to a Page of PostDTOs
+        return postPage.map(this::convertToDto);
+    }
+
+
+
+    private Specification<Post> withValidatedAnswer(Boolean validatedAnswer) {
+        return (root, query, criteriaBuilder) -> {
+            if (validatedAnswer == null) {
+                return criteriaBuilder.conjunction();
+            }
+
+            // Join with the answers
+            Join<Post, Answer> answersJoin = root.join("answers");
+
+            if (validatedAnswer) {
+                // Filter posts with at least one validated answer
+                return criteriaBuilder.isTrue(answersJoin.get("validated"));
+            } else {
+                // Filter posts with no validated answers
+                return criteriaBuilder.isFalse(answersJoin.get("validated"));
+            }
+        };
+    }
+
+
+    private Specification<Post> withTags(List<String> tags) {
+        return (root, query, criteriaBuilder) -> {
+            if (tags == null || tags.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+            // Join with the tags
+            Join<Post, Tags> tagsJoin = root.join("tags");
+            return tagsJoin.get("name").in(tags);
+        };
+    }
+
+
+
+    private PostDTO convertToDto(Post post) {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setPostId(post.getPostId());
+        postDTO.setTitle(post.getTitle());
+        postDTO.setContent(post.getContent());
+        postDTO.setCreatedAt(post.getCreatedAt());
+        postDTO.setUpvotes(post.getUpvoters().size()); // Use .size() to get count of upvoters
+        postDTO.setDownvotes(post.getDownvoters().size()); // Use .size() to get count of downvoters
+        postDTO.setTags(post.getTags());
+        postDTO.setUsername(post.getUser() != null ? post.getUser().getUsername() : null);
+        return postDTO;
+    }
 }

@@ -61,7 +61,7 @@ public class AnswerService {
         Answer savedAnswer = answerRepository.save(answer);
 
         // Notify user about the new answer
-        notifyUserAboutNewAnswer(post.getUserId(), savedAnswer);
+        notifyUserAboutNewAnswer(post.getUserId(), savedAnswer, username);
 
         return savedAnswer;
     }
@@ -103,7 +103,7 @@ public class AnswerService {
         answer.setUpvotes(answer.getUpvotes() + 1);
 
         // Notify user about the upvote
-        notifyUserAboutUpvote(answer.getUserId(), answer);
+        notifyUserAboutUpvote(answer.getUserId(), answer, username);
 
         return answerRepository.save(answer);
     }
@@ -126,7 +126,7 @@ public class AnswerService {
         answer.setDownvotes(answer.getDownvotes() + 1);
 
         // Notify user about the downvote
-        notifyUserAboutDownvote(answer.getUserId(), answer);
+        notifyUserAboutDownvote(answer.getUserId(), answer, username);
 
         return answerRepository.save(answer);
     }
@@ -177,7 +177,12 @@ public class AnswerService {
         }
 
         answer.setValidated(true);
-        return answerRepository.save(answer);
+        Answer validatedAnswer = answerRepository.save(answer);
+
+        // Notify the user about the validation
+        notifyUserAboutAnswerValidation(answer.getUserId(), validatedAnswer, username);
+
+        return validatedAnswer;
     }
 
     public List<Answer> searchAnswersByContent(String content) {
@@ -196,27 +201,36 @@ public class AnswerService {
         return answerRepository.countAnswersByUserId(userId);
     }
 
-    public void notifyUserAboutNewAnswer(Integer userId, Answer answer) {
+    public void notifyUserAboutNewAnswer(Integer userId, Answer answer, String username) {
         Notification notification = new Notification();
         notification.setUserId(Long.valueOf(userId));
         notification.setType("NEW_ANSWER");
-        notification.setContent("Your post received a new answer!");
+        notification.setContent(username + " has answered your post!");
         questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 
-    public void notifyUserAboutUpvote(Integer userId, Answer answer) {
+
+    public void notifyUserAboutUpvote(Integer userId, Answer answer, String username) {
         Notification notification = new Notification();
         notification.setUserId(Long.valueOf(userId));
         notification.setType("UPVOTE");
-        notification.setContent("Your answer was upvoted!");
+        notification.setContent(username + " has upvoted your answer!");
         questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 
-    public void notifyUserAboutDownvote(Integer userId, Answer answer) {
+
+    public void notifyUserAboutDownvote(Integer userId, Answer answer, String username) {
         Notification notification = new Notification();
         notification.setUserId(Long.valueOf(userId));
         notification.setType("DOWNVOTE");
-        notification.setContent("Your answer was downvoted!");
+        notification.setContent(username + " has downvoted your answer!");
+        questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
+    }
+    public void notifyUserAboutAnswerValidation(Integer userId, Answer answer, String username) {
+        Notification notification = new Notification();
+        notification.setUserId(Long.valueOf(userId));
+        notification.setType("ANSWER_VALIDATION");
+        notification.setContent("Your answer was validated by " + username + "!");
         questionAnswerRestTemplate.postForObject("http://localhost:8085/notifications", notification, Notification.class);
     }
 }

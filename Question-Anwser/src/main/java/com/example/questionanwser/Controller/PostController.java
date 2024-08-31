@@ -277,4 +277,17 @@ public class PostController {
         return userProfileService.countFollowedPostsByUsername(username);
     }
 
+    @GetMapping("/filter")
+    public ResponseEntity<Page<PostDTO>> filterPosts(
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) Boolean verifiedAnswer,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Page<PostDTO> posts = postService.filterAndSortPosts(sortBy, verifiedAnswer, tags, page, size);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
+
+
 }
